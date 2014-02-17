@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html>
+<html lang="he">
+<head>
+    <title>Bootstrap 101 Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/styles/bootstrap-rtl.min.css">
+    <link rel="stylesheet" href="/static/styles/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/static/styles/readingpane.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body class="rtl" data-spy="scroll" data-target="#reading-sidebar" data-offset="70">
+    <a class="sr-only" href="#content">Skip to main content</a>
+
+    <header class="navbar navbar-fixed-top navbar-inverse kz-reading-pane-nav" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">חיפוש עברי</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="#">מאמרים</a></li>
+                    <li><a href="http://code972.com/blog/tagged/hebmorph">בלוג</a></li>
+                    <li><a href="/about">אודות</a></li>
+                    <li><a href="/contact">צור קשר</a></li>
+                </ul>
+            </div><!-- /.nav-collapse -->
+        </div><!-- /.container -->
+    </header><!-- /.navbar -->
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="pull-right visible-xs">
+                    <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
+                </p>
+                <div class="jumbotron title">
+                    <h1>חיפוש עברי</h1>
+                    <p class="subtitle">כמה מילים על מה שקורה פה</p>
+                </div>
+                <div class="row">
+                    <div class="col-md-9">
+                        @RenderBody()
+                    </div>
+                    <div class="col-md-3 hidden-print" role="complementary" id="reading-sidebar">
+                        <ul class="nav nav-stacked bs-sidenav" id="reading-pane-sidebar">
+                            <li><a href="#h1">אוקומי ואברויי</a></li>
+                            <li><a href="#h2">מקום פסידא</a></li>
+                            <li><a href="#h3">יסוד ההיתר של 'מקום פסידא'</a></li>
+                        </ul>
+                    </div>
+
+                </div><!--/row-->
+            </div><!--/span-->
+        </div><!--/row-->
+
+        <hr>
+
+        <footer id="kz-footer">
+            <p>&copy; 2014 איתמר-סין-הרשקו</p>
+        </footer>
+
+    </div><!--/.container-->
+
+    <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.js"></script>
+    <script type="text/javascript">
+        !function ($) {
+
+            $(function () {
+                // back to top
+                setTimeout(function () {
+                    var $sideBar = $('#reading-pane-sidebar')
+
+                    $sideBar.affix({
+                        offset: {
+                            top: function () {
+                                var offsetTop = $sideBar.offset().top
+                                var sideBarMargin = parseInt($sideBar.children(0).css('margin-top'), 10)
+                                var navOuterHeight = $('.kz-reading-pane-nav').height()
+                                return (this.top = offsetTop - navOuterHeight - sideBarMargin)
+                            }
+						, bottom: function () {
+						    return (this.bottom = $('#kz-footer').outerHeight(true))
+						}
+                        }
+                    })
+                }, 100)
+            })
+
+            // set up footnote references within the text
+            $("span.footnoteRef").each(function (i) {
+                var ref = $(this);
+                var num = ref.data("fn");
+                ref.text("[" + num + "]"); // set footnote number
+
+                // get footnote text and set in data attribute for use with popover
+                var fnElem = $("#footnote-" + num + " span.footnoteContent");
+                var fnText = fnElem.text() + " <a href='#footnote-" + num + "'>#</a>";
+                ref.data('content', fnText);
+                ref.data('title', 'מקור ' + num);
+            })
+			// apply popover to each footnoteRef
+			// additional code to allow user to mouse-hover over popover and select text - http://stackoverflow.com/a/12274958/51
+			.popover({
+			    trigger: 'manual',
+			    placement: 'top',
+			    delay: '{show: 100, hide: 250}',
+			    html: true,
+			    template: '<div class="popover" onmouseover="clearTimeout(timeoutObj);$(this).mouseleave(function() {$(this).hide();});"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-container"><div class="popover-content"><p></p></div></div></div></div>'
+			}).mouseenter(function (e) {
+			    $(this).popover('show');
+			}).mouseleave(function (e) {
+			    var ref = $(this);
+			    timeoutObj = setTimeout(function () {
+			        ref.popover('hide');
+			    }, 100);
+			});
+
+            // when clicking on a scrollspy link, make sure that the target scrolls to be in view
+            // without this it is hidden under top nav. Via http://stackoverflow.com/a/11814275/51
+            var offset = 70;
+            $('#reading-pane-sidebar li a').click(function (event) {
+                event.preventDefault();
+                $($(this).attr('href'))[0].scrollIntoView();
+                scrollBy(0, -offset);
+            });
+
+        }(window.jQuery)
+    </script>
+
+</body>
+</html>

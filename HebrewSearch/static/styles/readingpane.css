@@ -1,0 +1,218 @@
+/*
+ * Style tweaks
+ * --------------------------------------------------
+ */
+html {
+  overflow-x: hidden; /* Prevent scroll on narrow devices */
+}
+body {
+  padding-top: 70px;
+}
+footer {
+  padding: 30px 0;
+}
+
+a {
+	color: #428bca;
+}
+a:hover, a:focus {
+	color: #2a6496;
+}
+
+/* article meta data */
+
+.jumbotron.title {
+	padding-top: 5px;
+	padding-bottom: 15px;
+	margin-bottom: 0px;
+}
+.jumbotron.title a {
+	color: #444;
+}
+.jumbotron.title .author {
+	font-weight: bold;	
+}
+.tags {
+	margin: 0 20px;
+}
+.label-default.tag a {
+	color: #efefef;
+}
+.label-default.tag:hover {
+	background-color: #454545;
+	color: #fff;
+}
+.label-default.tag:hover > a {
+  text-decoration: none;
+}
+
+/**
+ * Quick fade on target to attract user attention
+ * from http://snook.ca/archives/html_and_css/yellow-fade-technique-css-animations
+ */
+:target {
+    -webkit-animation: target-fade 10s 1;
+    -moz-animation: target-fade 10s 1;
+}
+
+@-webkit-keyframes target-fade {
+    0% { background-color: rgba(255,255,0,.8); }
+    100% { background-color: rgba(255,255,0,.2); }
+}
+@-moz-keyframes target-fade {
+    0% { background-color: rgba(255,255,0,.8); }
+    100% { background-color: rgba(255,255,0,.2); }
+}
+
+/* Footnote Styles */
+ol.footnotes {
+	font-weight: bold;
+}
+ol.footnotes li span.footnoteContent {
+	font-weight: normal;
+}
+span.footnoteRef {
+	font-weight: bold;
+	margin-right: 4px;
+}
+.popover {
+	max-width: 300px;
+}
+.popover-title {
+	font-weight: bold;
+}
+body.rtl .popover-inner {
+	text-align: right; /* Note: only for RTL */
+}
+.popover-container {
+	max-height: 150px;
+	overflow-y: auto;
+}
+ol.footnotes a.anchor, ol.footnotes a.anchor:hover, ol.footnotes a.anchor:active {
+	text-decoration: none;
+	color: #000;
+}
+
+/*
+ * Off Canvas
+ * --------------------------------------------------
+ */
+@media screen and (max-width: 767px) {
+  .row-offcanvas {
+    position: relative;
+    -webkit-transition: all 0.25s ease-out;
+    -moz-transition: all 0.25s ease-out;
+    transition: all 0.25s ease-out;
+  }
+
+  .row-offcanvas-right
+  .sidebar-offcanvas {
+    right: -50%; /* 6 columns */
+  }
+
+  .row-offcanvas-left
+  .sidebar-offcanvas {
+    left: -50%; /* 6 columns */
+  }
+
+  .row-offcanvas-right.active {
+    right: 50%; /* 6 columns */
+  }
+
+  .row-offcanvas-left.active {
+    left: 50%; /* 6 columns */
+  }
+
+  .sidebar-offcanvas {
+    position: absolute;
+    top: 0;
+    width: 50%; /* 6 columns */
+  }
+}
+
+/*
+ * Side navigation
+ *
+ * Scrollspy and affixed enhanced navigation to highlight sections and secondary
+ * sections of docs content.
+ */
+
+/* By default it's not affixed in mobile views, so undo that */
+#reading-pane-sidebar.affix {
+  position: static;
+}
+
+/* First level of nav */
+.bs-sidenav {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  padding-top:    10px;
+  padding-bottom: 10px;
+  text-shadow: 0 1px 0 #fff;
+  background-color: #f7f5fa;
+  border-radius: 5px;
+}
+
+/* All levels of nav */
+#reading-pane-sidebar.nav > li > a {
+  display: block;
+  color: #716b7a;
+  padding: 5px 20px;
+}
+#reading-pane-sidebar.nav > li > a:hover,
+#reading-pane-sidebar.nav > li > a:focus {
+  text-decoration: none;
+  background-color: #e5e3e9;
+  border-right: 1px solid #dbd8e0;
+}
+#reading-pane-sidebar.nav > .active > a,
+#reading-pane-sidebar.nav > .active:hover > a,
+#reading-pane-sidebar.nav > .active:focus > a {
+  font-weight: bold;
+  color: #563d7c;
+  background-color: transparent;
+  border-right: 1px solid #563d7c;
+}
+
+/* Nav: second level (shown on .active) */
+#reading-pane-sidebar.nav .nav {
+  display: none; /* Hide by default, but at >768px, show it */
+  margin-bottom: 8px;
+}
+#reading-pane-sidebar.nav .nav > li > a {
+  padding-top:    3px;
+  padding-bottom: 3px;
+  padding-left: 30px;
+  font-size: 90%;
+}
+
+/* Show and affix the side nav when space allows it */
+@media (min-width: 992px) {
+  #reading-pane-sidebar.nav > .active > ul {
+    display: block;
+  }
+  /* Widen the fixed sidebar */
+  #reading-pane-sidebar.affix,
+  #reading-pane-sidebar.affix-bottom {
+    width: 150px;
+  }
+  #reading-pane-sidebar.affix {
+    position: fixed; /* Undo the static from mobile first approach */
+    top: 80px;
+  }
+  #reading-pane-sidebar.affix-bottom {
+    position: absolute; /* Undo the static from mobile first approach */
+  }
+  #reading-pane-sidebar.affix-bottom .bs-sidenav,
+  #reading-pane-sidebar.affix .bs-sidenav {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+@media (min-width: 1200px) {
+  /* Widen the fixed sidebar again */
+  #reading-pane-sidebar.affix-bottom,
+  #reading-pane-sidebar.affix {
+    width: 263px;
+  }
+}
