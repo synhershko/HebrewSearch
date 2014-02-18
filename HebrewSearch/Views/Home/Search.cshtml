@@ -3,4 +3,15 @@
     Layout = "_Layout.cshtml";
 }
 
-<h1>test</h1>
+<h1>Total results: @Model.TotalResults</h1>
+
+@if (Model.Results != null)
+{
+    foreach (var r in Model.Results)
+    {
+        <div>
+            <h2>@r.Title</h2>
+            <p>@r.Snippets</p>
+        </div>
+    }
+}
