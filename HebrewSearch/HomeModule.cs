@@ -12,12 +12,14 @@ namespace HebrewSearch
     {
         public HomeModule(IElasticClient elasticClient)
         {
-           
-            Get["/search/{q*}", true] = async (p, ct) =>
+            const int pageSize = 10;
+
+            Get["/search", true] = async (p, ct) =>
                        {
                            var vm = new HomeViewModel();
 
-                           string q = p.q;
+                           string q = Request.Query.q;
+                           int page = 1;
 
                            if (q != null) { 
                                var results = await elasticClient.SearchAsync<ContentPage>(
@@ -35,6 +37,7 @@ namespace HebrewSearch
                                        .Highlight(h => h.PreTags("<b>").PostTags("</b>").OnFields(_ => _.OnField("title").NumberOfFragments(0), _ => _.OnField("text")))
                                        .Fields("title", "categories", "author")
                                        .FacetTerm("categories", f => f.OnField("categories").FacetFilter(filter => filter.And(_ => _.Missing("redirect"))).Size(50))
+                                       .Size(pageSize).Skip(pageSize * (page - 1))
                                    );
 
                                if (results.ConnectionStatus.Error != null)

@@ -52,8 +52,10 @@
                     <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
                 </p>
                 <div class="jumbotron title">
-                    <h1>חיפוש עברי</h1>
-                    <p class="subtitle"><input type="text" name="q" /></p>
+                    <form action="/search" method="GET">
+                        <h1>חיפוש עברי</h1>
+                        <p class="subtitle"><input type="text" name="q" /> <input type="submit" value="חפש"/></p>
+                    </form>
                 </div>
                 <div class="row">
                     @RenderBody()
