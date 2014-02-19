@@ -12,13 +12,7 @@ namespace HebrewSearch
     {
         public HomeModule(IElasticClient elasticClient)
         {
-            Get["/"] = (p) =>
-                       {
-                           var vm = new HomeViewModel();
-
-                           return View["Search", vm];
-                       };
-            
+           
             Get["/search/{q*}", true] = async (p, ct) =>
                        {
                            var vm = new HomeViewModel();
@@ -27,12 +21,12 @@ namespace HebrewSearch
 
                            if (q != null) { 
                                var results = await elasticClient.SearchAsync<ContentPage>(
-                                   search => search.Type("contentpage").AllIndices().Query(
+                                   search => search.Type("contentpage").Index("hebrew-wikipedia-20140208").Query(
                                        mainQuery => mainQuery.Filtered(filtered => filtered.Query(
                                         query => query.Bool(b => b.Should(
-                                            bc => bc.Match(_ => _.OnField("title").Boost(5.0).QueryString(q)),
-                                            bc => bc.Match(_ => _.OnField("text").QueryString(q))
-                                            )
+                                            bc => bc.MatchPhrase(_ => _.OnField("title").QueryString(q)),
+                                            bc => bc.MatchPhrase(_ => _.OnField("text").QueryString(q))
+                                            ) // .Analyzer("hebrew_query")
                                           )
                                          ).Filter(
                                             filter => filter.And(_ => _.Missing("redirect"))
@@ -40,6 +34,7 @@ namespace HebrewSearch
                                        ))
                                        .Highlight(h => h.PreTags("<b>").PostTags("</b>").OnFields(_ => _.OnField("title").NumberOfFragments(0), _ => _.OnField("text")))
                                        .Fields("title", "categories", "author")
+                                       .FacetTerm("categories", f => f.OnField("categories").FacetFilter(filter => filter.And(_ => _.Missing("redirect"))).Size(50))
                                    );
 
                                if (results.ConnectionStatus.Error != null)
@@ -65,13 +60,33 @@ namespace HebrewSearch
                                    {
                                        r.Snippets = new NonEncodedHtmlString(String.Join("... ", hit.Highlights["text"].Highlights));
                                    }
+
+                                   r.Categories = hit.Fields.Categories;
+
                                    vm.Results.Add(r);
                                }
+
+                               vm.CategoryFacets = results.Facet<TermFacet>("categories").Items.Select(x => new TermAndCount
+                                                                                                            {
+                                                                                                                Term = x.Term,
+                                                                                                                Count = x.Count,
+                                                                                                            });
                            }
 
 
                            return View["Search", vm];
                        };
+
+            Get["/"] = p =>
+                       {
+                           var vm = new HomeViewModel();
+
+                           return View["Main", vm];
+                       };
+
+            Get["/about"] = p => View["About"];
+
+            Get["/contact"] = p => View["Contact"];
         }
     }
 
@@ -81,5 +96,6 @@ namespace HebrewSearch
         public string[] Indexes { get; set; }
         public List<SearchResult> Results { get; set; }
         public string ErrorString { get; set; }
+        public IEnumerable<TermAndCount> CategoryFacets { get; set; }
     }
 }

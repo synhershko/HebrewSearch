@@ -1,17 +1,106 @@
-﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<HebrewSearch.HomeViewModel>
+﻿@using System.Globalization
+@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<HebrewSearch.HomeViewModel>
 @{
     Layout = "_Layout.cshtml";
 }
 
-<h1>Total results: @Model.TotalResults</h1>
-
 @if (Model.Results != null)
 {
-    foreach (var r in Model.Results)
-    {
-        <div>
-            <h2>@r.Title</h2>
-            <p>@r.Snippets</p>
+    <div class="col-md-9">
+        <h2>נמצאו @Model.TotalResults.ToString("N0", CultureInfo.InvariantCulture) תוצאות</h2>
+
+        <div id="search-results">
+            @foreach (var r in Model.Results)
+            {
+                <h3>@r.Title</h3>
+                <p>@r.Snippets</p>
+                <p>
+                    @foreach (var c in r.Categories)
+                    {
+                        <a href="#" class="label label-default tag">@c</a>
+                    }
+                </p>
+                <hr />
+            }
         </div>
-    }
+    </div>
+    <div class="col-md-3 hidden-print" role="complementary" id="reading-sidebar">
+        <ul class="nav nav-stacked bs-sidenav" id="reading-pane-sidebar">
+            @foreach (var c in Model.CategoryFacets)
+            {
+                <li><a href="#">@c.Term (@c.Count)</a></li>
+            }
+        </ul>
+    </div>
+
+    <script type="text/javascript">
+        !function($) {
+
+            $(function() {
+                // back to top
+                setTimeout(function() {
+                    var $sideBar = $('#reading-pane-sidebar')
+
+                    $sideBar.affix({
+                        offset: {
+                            top: function() {
+                                var offsetTop = $sideBar.offset().top
+                                var sideBarMargin = parseInt($sideBar.children(0).css('margin-top'), 10)
+                                var navOuterHeight = $('.kz-reading-pane-nav').height()
+                                return (this.top = offsetTop - navOuterHeight - sideBarMargin)
+                            },
+                            bottom: function() {
+                                return (this.bottom = $('#kz-footer').outerHeight(true))
+                            }
+                        }
+                    })
+                }, 100)
+            })
+
+            // set up footnote references within the text
+            $("span.footnoteRef").each(function(i) {
+                    var ref = $(this);
+                    var num = ref.data("fn");
+                    ref.text("[" + num + "]"); // set footnote number
+
+                    // get footnote text and set in data attribute for use with popover
+                    var fnElem = $("#footnote-" + num + " span.footnoteContent");
+                    var fnText = fnElem.text() + " <a href='#footnote-" + num + "'>#</a>";
+                    ref.data('content', fnText);
+                    ref.data('title', 'מקור ' + num);
+                })
+                // apply popover to each footnoteRef
+                // additional code to allow user to mouse-hover over popover and select text - http://stackoverflow.com/a/12274958/51
+                .popover({
+                    trigger: 'manual',
+                    placement: 'top',
+                    delay: '{show: 100, hide: 250}',
+                    html: true,
+                    template: '<div class="popover" onmouseover="clearTimeout(timeoutObj);$(this).mouseleave(function() {$(this).hide();});"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-container"><div class="popover-content"><p></p></div></div></div></div>'
+                }).mouseenter(function(e) {
+                    $(this).popover('show');
+                }).mouseleave(function(e) {
+                    var ref = $(this);
+                    timeoutObj = setTimeout(function() {
+                        ref.popover('hide');
+                    }, 100);
+                });
+
+            // when clicking on a scrollspy link, make sure that the target scrolls to be in view
+            // without this it is hidden under top nav. Via http://stackoverflow.com/a/11814275/51
+            var offset = 70;
+            $('#reading-pane-sidebar li a').click(function(event) {
+                event.preventDefault();
+                $($(this).attr('href'))[0].scrollIntoView();
+                scrollBy(0, -offset);
+            });
+
+        }(window.jQuery)
+    </script>
+}
+else
+{
+    <div class="col-md-12">
+        <div class="alert alert-danger">לא נמצאו תוצאות לחיפוש שהוקלד</div>
+    </div>
 }

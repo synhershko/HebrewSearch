@@ -126,6 +126,9 @@
     <Content Include="static\scripts\jquery-1.9.1.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="static\styles\search-results.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="static\styles\readingpane.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -137,6 +140,7 @@
     <Compile Include="Models\ContentPage.cs" />
     <Compile Include="Models\Corpus.cs" />
     <Compile Include="Models\SearchResult.cs" />
+    <Compile Include="Models\TermAndCount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -150,6 +154,7 @@
     <Content Include="Views\Home\Search.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\Home\Main.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
