@@ -135,6 +135,13 @@ namespace HebrewSearch
 
     public class HomeViewModel
     {
+        public HomeViewModel()
+        {
+            Indexes = new string[]{};
+            Results = new List<SearchResult>();
+            CategoryFacets = new List<TermAndCount>();
+        }
+
         public long TotalResults { get; set; }
         public string[] Indexes { get; set; }
         public List<SearchResult> Results { get; set; }
