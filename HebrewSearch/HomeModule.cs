@@ -63,8 +63,6 @@ namespace HebrewSearch
                                                                               
                                                                           },
 
-                                                              fields = new[] { "title", "categories", "author" },
-
                                                               aggregations = new {categories = new
                                                                                   {
                                                                                       terms = new
@@ -75,16 +73,19 @@ namespace HebrewSearch
                                                                                               }
                                                                                   }},
 
+                                                              _source = new[] { "title", "categories", "author" },
+
                                                               from = pageSize * (page - 1),
                                                               size = pageSize,
                                                           }
-                                                          , "hebrew-wikipedia-20140208", "contentpage");
+                                                          , "hebrew-wikipedia-20140610", "contentpage");
 
-                               if (results.status != HttpStatusCode.OK)
-                               {
-                                   // vm.ErrorString = TODO
-                               }
-
+                               // TODO
+//                               if (results.status != HttpStatusCode.OK)
+//                               {
+//                                   vm.ErrorString = 
+//                               }
+                                                            
                                vm.TotalResults = results.hits.total;
                                vm.Results = new List<SearchResult>();
                                foreach (var hit in results.hits.hits)
@@ -96,7 +97,7 @@ namespace HebrewSearch
                                    }
                                    else
                                    {
-                                       r.Title = new NonEncodedHtmlString(hit.fields["title"].ToString());
+                                       r.Title = new NonEncodedHtmlString(hit._source.Title);
                                    }
 
                                    if (hit.highlight.ContainsKey("text"))
@@ -104,7 +105,8 @@ namespace HebrewSearch
                                        r.Snippets = new NonEncodedHtmlString(String.Join("... ", hit.highlight["text"]));
                                    }
 
-                                   r.Categories = hit.fields["categories"].Select(x => x as string);
+                                   r.Categories = hit._source.Categories;
+                                   r.Id = hit._id;
 
                                    vm.Results.Add(r);
                                }
