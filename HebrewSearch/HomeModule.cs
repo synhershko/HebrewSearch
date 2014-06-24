@@ -4,13 +4,16 @@ using System.Linq;
 using HebrewSearch.Models;
 using Nancy;
 using Nancy.ViewEngines.Razor;
+using NElasticsearch;
+using NElasticsearch.Commands;
 using Nest;
+using HttpStatusCode = System.Net.HttpStatusCode;
 
 namespace HebrewSearch
 {
     public class HomeModule : NancyModule
     {
-        public HomeModule(IElasticClient elasticClient)
+        public HomeModule(ElasticsearchRestClient client)
         {
             const int pageSize = 10;
 
@@ -21,33 +24,71 @@ namespace HebrewSearch
                            string q = Request.Query.q;
                            int page = 1;
 
-                           if (q != null) { 
-                               var results = await elasticClient.SearchAsync<ContentPage>(
-                                   search => search.Type("contentpage").Index("hebrew-wikipedia-20140208").Query(
-                                       mainQuery => mainQuery.Filtered(filtered => filtered.Query(
-                                        query => query.Bool(b => b.Should(
-                                            bc => bc.MatchPhrase(_ => _.OnField("title").QueryString(q)),
-                                            bc => bc.MatchPhrase(_ => _.OnField("text").QueryString(q))
-                                            ) // .Analyzer("hebrew_query")
-                                          )
-                                         ).Filter(
-                                            filter => filter.And(_ => _.Missing("redirect"))
-                                         )
-                                       ))
-                                       .Highlight(h => h.PreTags("<b>").PostTags("</b>").OnFields(_ => _.OnField("title").NumberOfFragments(0), _ => _.OnField("text")))
-                                       .Fields("title", "categories", "author")
-                                       .FacetTerm("categories", f => f.OnField("categories").FacetFilter(filter => filter.And(_ => _.Missing("redirect"))).Size(50))
-                                       .Size(pageSize).Skip(pageSize * (page - 1))
-                                   );
+                           if (q != null)
+                           {
+                               var filter = new {missing = new {field = "redirect"}};
+                               var match_phrase = new {query = q, analyzer = "hebrew_query"};
 
-                               if (results.ConnectionStatus.Error != null)
+                               var query = new
+                                           {
+                                               filtered = new
+                                                          {
+                                                              query = new
+                                                                      {
+                                                                          @bool = new
+                                                                                  {
+                                                                                      should = new object[]
+                                                                                               {
+                                                                                                   new {match_phrase = new{title = match_phrase}},
+                                                                                                   new {match_phrase = new{text = match_phrase}},
+                                                                                               },
+                                                                                      minimum_should_match = 1,
+                                                                                  }
+                                                                      },
+                                                              filter = filter,
+                                                          }
+                                           };
+
+                               var results = client.Search<ContentPage>(new
+                                                          {
+                                                              query = query,
+
+                                                              highlight = new
+                                                                          {
+                                                                              fields = new
+                                                                                       {
+                                                                                           title = new {number_of_fragments = 0 },
+                                                                                           text = new {},
+                                                                                       },
+                                                                              pre_tags = new[] {"<b>"}, post_tags = new[]{"</b>"},
+                                                                              
+                                                                          },
+
+                                                              fields = new[] { "title", "categories", "author" },
+
+                                                              aggregations = new {categories = new
+                                                                                  {
+                                                                                      terms = new
+                                                                                              {
+                                                                                                  field = "categories",
+                                                                                                  size = 50,
+                                                                                                  //filter = filter,
+                                                                                              }
+                                                                                  }},
+
+                                                              from = pageSize * (page - 1),
+                                                              size = pageSize,
+                                                          }
+                                                          , "hebrew-wikipedia-20140208", "contentpage");
+
+                               if (results.status != HttpStatusCode.OK)
                                {
-                                   vm.ErrorString = results.ConnectionStatus.Error.ToString();
+                                   // vm.ErrorString = TODO
                                }
 
-                               vm.TotalResults = results.Total;
+                               vm.TotalResults = results.hits.total;
                                vm.Results = new List<SearchResult>();
-                               foreach (var hit in results.DocumentsWithMetaData)
+                               foreach (var hit in results.hits.hits)
                                {
                                    var r = new SearchResult();
                                    if (hit.Highlights.ContainsKey("title"))
@@ -95,7 +136,7 @@ namespace HebrewSearch
 
     public class HomeViewModel
     {
-        public int TotalResults { get; set; }
+        public long TotalResults { get; set; }
         public string[] Indexes { get; set; }
         public List<SearchResult> Results { get; set; }
         public string ErrorString { get; set; }

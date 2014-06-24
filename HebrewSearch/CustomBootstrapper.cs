@@ -1,8 +1,7 @@
-﻿using System;
-using Nancy;
+﻿using Nancy;
 using Nancy.Conventions;
 using Nancy.TinyIoc;
-using Nest;
+using NElasticsearch;
 
 namespace HebrewSearch
 {
@@ -11,12 +10,7 @@ namespace HebrewSearch
         protected override void ConfigureApplicationContainer(TinyIoCContainer container)
         {
             base.ConfigureApplicationContainer(container);
-
-            var settings = new ConnectionSettings(new Uri(""))
-                //.SetDefaultIndex("mydefaultindex")
-            ;
-            var elasticClient = new ElasticClient(settings);
-            container.Register<IElasticClient>(elasticClient);
+            container.Register(new ElasticsearchRestClient("http://localhost:9200"));
         }
 
         protected override void ConfigureConventions(NancyConventions conventions)
