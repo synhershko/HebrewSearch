@@ -1,0 +1,8 @@
+To pull from NElasticsearch:
+
+git fetch tpope-vim-surround master
+git subtree pull --prefix NElasticsearch NElasticsearch master --squash
+
+To push upstream to NElasticsearch:
+
+git subtree push --prefix=NElasticsearch/ NElasticsearch master

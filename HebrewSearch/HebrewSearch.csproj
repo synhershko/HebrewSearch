@@ -164,6 +164,12 @@
   <ItemGroup>
     <Folder Include="Infrastructure\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NElasticsearch\NElasticsearch\NElasticsearch.csproj">
+      <Project>{08a771f5-787e-4089-8e7f-400b907f9426}</Project>
+      <Name>NElasticsearch</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
