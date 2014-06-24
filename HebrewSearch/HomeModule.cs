@@ -6,7 +6,6 @@ using Nancy;
 using Nancy.ViewEngines.Razor;
 using NElasticsearch;
 using NElasticsearch.Commands;
-using Nest;
 using HttpStatusCode = System.Net.HttpStatusCode;
 
 namespace HebrewSearch
@@ -91,30 +90,30 @@ namespace HebrewSearch
                                foreach (var hit in results.hits.hits)
                                {
                                    var r = new SearchResult();
-                                   if (hit.Highlights.ContainsKey("title"))
+                                   if (hit.highlight.ContainsKey("title"))
                                    {
-                                       r.Title = new NonEncodedHtmlString(String.Join("... ", hit.Highlights["title"].Highlights));
+                                       r.Title = new NonEncodedHtmlString(String.Join("... ", hit.highlight["title"]));
                                    }
                                    else
                                    {
-                                       r.Title = new NonEncodedHtmlString(hit.Fields.Title);
+                                       r.Title = new NonEncodedHtmlString(hit.fields["title"].ToString());
                                    }
 
-                                   if (hit.Highlights.ContainsKey("text"))
+                                   if (hit.highlight.ContainsKey("text"))
                                    {
-                                       r.Snippets = new NonEncodedHtmlString(String.Join("... ", hit.Highlights["text"].Highlights));
+                                       r.Snippets = new NonEncodedHtmlString(String.Join("... ", hit.highlight["text"]));
                                    }
 
-                                   r.Categories = hit.Fields.Categories;
+                                   r.Categories = hit.fields["categories"].Select(x => x as string);
 
                                    vm.Results.Add(r);
                                }
 
-                               vm.CategoryFacets = results.Facet<TermFacet>("categories").Items.Select(x => new TermAndCount
-                                                                                                            {
-                                                                                                                Term = x.Term,
-                                                                                                                Count = x.Count,
-                                                                                                            });
+//                               vm.CategoryFacets = results.Facet<TermFacet>("categories").Items.Select(x => new TermAndCount
+//                                                                                                            {
+//                                                                                                                Term = x.Term,
+//                                                                                                                Count = x.Count,
+//                                                                                                            });
                            }
 
 

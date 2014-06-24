@@ -1,4 +1,5 @@
-﻿using Nancy.ViewEngines.Razor;
+﻿using System.Collections.Generic;
+using Nancy.ViewEngines.Razor;
 
 namespace HebrewSearch.Models
 {
@@ -6,7 +7,7 @@ namespace HebrewSearch.Models
     {
         public string Id { get; set; }
         public IHtmlString Title { get; set; }
-        public string[] Categories { get; set; }
+        public IEnumerable<string> Categories { get; set; }
         public IHtmlString Snippets { get; set; }
     }
 }
