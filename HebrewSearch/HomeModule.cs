@@ -26,24 +26,12 @@ namespace HebrewSearch
                            if (q != null)
                            {
                                var filter = new {missing = new {field = "redirect"}};
-                               var match_phrase = new {query = q, analyzer = "hebrew_query"};
 
                                var query = new
                                            {
                                                filtered = new
                                                           {
-                                                              query = new
-                                                                      {
-                                                                          @bool = new
-                                                                                  {
-                                                                                      should = new object[]
-                                                                                               {
-                                                                                                   new {match_phrase = new{title = match_phrase}},
-                                                                                                   new {match_phrase = new{text = match_phrase}},
-                                                                                               },
-                                                                                      minimum_should_match = 1,
-                                                                                  }
-                                                                      },
+                                                              query = new { multi_match = new { query = q, fields = new[] { "title", "text" } } },
                                                               filter = filter,
                                                           }
                                            };
