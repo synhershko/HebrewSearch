@@ -19,12 +19,14 @@ namespace HebrewSearch
             Get["/search", true] = async (p, ct) =>
                        {
                            var vm = new HomeViewModel();
+                           ViewBag.Query = string.Empty;
 
                            string q = Request.Query.q;
                            int page = 1;
 
                            if (q != null)
                            {
+                               ViewBag.Query = q;
                                var filter = new {missing = new {field = "redirect"}};
 
                                var analyzer = "hebrew_query";
@@ -148,6 +150,7 @@ namespace HebrewSearch
             CategoryFacets = new List<TermAndCount>();
         }
 
+        public string Query { get; set; }
         public long TotalResults { get; set; }
         public string[] Indexes { get; set; }
         public List<SearchResult> Results { get; set; }
