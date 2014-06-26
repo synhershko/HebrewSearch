@@ -55,9 +55,8 @@ namespace HebrewSearch
                                                                                   {
                                                                                       terms = new
                                                                                               {
-                                                                                                  field = "categories",
+                                                                                                  field = "link",
                                                                                                   size = 50,
-                                                                                                  //filter = filter,
                                                                                               }
                                                                                   }},
 
@@ -99,11 +98,11 @@ namespace HebrewSearch
                                    vm.Results.Add(r);
                                }
 
-//                               vm.CategoryFacets = results.Facet<TermFacet>("categories").Items.Select(x => new TermAndCount
-//                                                                                                            {
-//                                                                                                                Term = x.Term,
-//                                                                                                                Count = x.Count,
-//                                                                                                            });
+                               vm.CategoryFacets = results.aggregations["categories"].Buckets.Select(x => new TermAndCount
+                                                                                                            {
+                                                                                                                Term = x.Key,
+                                                                                                                Count = x.DocCount,
+                                                                                                            });
                            }
 
 
