@@ -141,6 +141,7 @@
     <Compile Include="Models\ContentPage.cs" />
     <Compile Include="Models\Corpus.cs" />
     <Compile Include="Models\SearchResult.cs" />
+    <Compile Include="Models\SearchType.cs" />
     <Compile Include="Models\TermAndCount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

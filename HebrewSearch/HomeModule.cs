@@ -27,18 +27,35 @@ namespace HebrewSearch
                            {
                                var filter = new {missing = new {field = "redirect"}};
 
-                               var query = new
-                                           {
-                                               filtered = new
-                                                          {
-                                                              query = new { multi_match = new { query = q, fields = new[] { "title", "text" } } },
-                                                              filter = filter,
-                                                          }
-                                           };
+                               var analyzer = "hebrew_query";
+                               SearchType searchType;
+                               //string type = Request.Query.type;
+                               if (!Enum.TryParse(Request.Query.type, true, out searchType))
+                               {
+                                   switch (searchType)
+                                   {
+                                       case SearchType.Morphological:
+                                           analyzer = "hebrew";
+                                           break;
+                                       case SearchType.Exact:
+                                       case SearchType.Naive:
+                                           analyzer = "hebrew_exact";
+                                           break;
+                                       default:
+                                           analyzer = "hebrew_query";
+                                           break;
+                                   }
+                               }
+
+                               var query = new {multi_match = new {query = q, fields = new[] {"title", "text"}, analyzer = analyzer}};
 
                                var results = client.Search<ContentPage>(new
                                                           {
-                                                              query = query,
+                                                              query = new { filtered = new
+                                                              {
+                                                                  query = query,
+                                                                  filter = filter,
+                                                              }},
 
                                                               highlight = new
                                                                           {
