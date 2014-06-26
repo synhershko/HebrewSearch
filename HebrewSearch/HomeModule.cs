@@ -29,15 +29,17 @@ namespace HebrewSearch
                                ViewBag.Query = q;
                                var filter = new {missing = new {field = "redirect"}};
 
-                               var analyzer = "hebrew_query";
-                               SearchType searchType;
-                               //string type = Request.Query.type;
-                               if (!Enum.TryParse(Request.Query.type, true, out searchType))
+                               var analyzer = "hebrew";
+                               SearchType searchType;                               
+                               if (Enum.TryParse(Request.Query.type, true, out searchType))
                                {
                                    switch (searchType)
                                    {
                                        case SearchType.Morphological:
-                                           analyzer = "hebrew";
+                                           analyzer = "hebrew_query";
+                                           break;
+                                       case SearchType.MorphologicalOptimized:
+                                           analyzer = "hebrew_query_light";
                                            break;
                                        case SearchType.Exact:
                                        case SearchType.Naive:
